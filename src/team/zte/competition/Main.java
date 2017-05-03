@@ -15,7 +15,7 @@ public class Main {
 	static int[][] graph;//邻接矩阵
 	static int[][] allGraph;//拆点后的邻接矩阵
 	static ArrayList<Integer> nodeCstrnt = new ArrayList<Integer>();//必须经过的点
-	static ArrayList<Integer> edgeCstrnt = new ArrayList<Integer>();//必须经过的点
+	static ArrayList<Edge> edgeCstrnt = new ArrayList<Edge>();//必须经过的边
 	static boolean[] visited;//判断是否访问过
 	static int[] pre;//保留上一个节点
 	static List<Integer> path;
@@ -27,7 +27,7 @@ public class Main {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		checkMatrix(graph);
+		//checkMatrix(graph);
 		graphTrans(nodeCstrntNum+edgeCstrntNum);
 		//checkMatrix(allGraph);
 		dijkstra();
@@ -92,8 +92,18 @@ public class Main {
 				}
 			}
 		}
-		//todo : 加入必经过边约束
-
+		//加入必经过边约束
+		for (int i = 0; i < edgeCstrnt.size(); i++){
+			int offset = (1 << i + nodeCstrnt.size());
+			for (int j = 0; j < layer; j += 2*offset){
+				for (int k = j; k < j + offset; k++){
+					allGraph[k*nodeNum+edgeCstrnt.get(i).beginNode()][(k+offset)*nodeNum+edgeCstrnt.get(i).endNode()] = edgeCstrnt.get(i).length();
+					allGraph[(k+offset)*nodeNum+edgeCstrnt.get(i).endNode()][k*nodeNum+edgeCstrnt.get(i).beginNode()] = edgeCstrnt.get(i).length();
+					allGraph[k*nodeNum+edgeCstrnt.get(i).endNode()][(k+offset)*nodeNum+edgeCstrnt.get(i).beginNode()] = edgeCstrnt.get(i).length();
+					allGraph[(k+offset)*nodeNum+edgeCstrnt.get(i).beginNode()][k*nodeNum+edgeCstrnt.get(i).endNode()] = edgeCstrnt.get(i).length();
+				}
+			}
+		}
 	}
 	
 	//读取文件中的数据
@@ -122,7 +132,7 @@ public class Main {
 				nodeCstrnt.add(sc.nextInt());
 			}
 			for (int i = 0; i < edgeCstrntNum; i++){
-				edgeCstrnt.add(sc.nextInt());
+				edgeCstrnt.add(new Edge(sc.nextInt(), sc.nextInt(), sc.nextInt()));
 			}
 		}
 		sc.close();
@@ -172,6 +182,5 @@ public class Main {
 			System.out.print("\n");
 		}
 	}
-	
-	
+
 }
