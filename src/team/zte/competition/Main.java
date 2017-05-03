@@ -29,9 +29,9 @@ public class Main {
 		}
 		checkMatrix(graph);
 		graphTrans(nodeCstrntNum+edgeCstrntNum);
-		checkMatrix(allGraph);
+		//checkMatrix(allGraph);
 		dijkstra();
-		checkMatrix(allGraph);
+		//checkMatrix(allGraph);
 		genPath();
 		showPath();
 		
@@ -64,7 +64,7 @@ public class Main {
 			//更新访问情况
 			visited[tmpNode] = true;
 			visiting = tmpNode;
-			System.out.println("已遍历点"+visiting);
+			//System.out.println("已遍历点"+visiting);
 		}
 	}
 	
@@ -143,9 +143,10 @@ public class Main {
 	//输出路径
 	public static void showPath(){
 		System.out.print("路径为 ：\t");
-		for (int i = path.size(); i > 0; i--){
-			System.out.printf("%d\t",path.get(i - 1));
+		for (int i = path.size() - 1; i > 0; i--){
+			System.out.printf("%d -> ",path.get(i));
 		}
+		System.out.printf("%d, 总花费为%d, 总共经过%d个点。",path.get(0),allGraph[0][allGraph.length-1],path.size());
 	}
 	
 	
