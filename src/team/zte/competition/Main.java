@@ -11,13 +11,13 @@ import java.util.Scanner;
 
 public class Main {
 	static final String file = "test/data.txt";
-	static int nodeNum = 0, edgeNum = 0, nodeCstrntNum = 0, edgeCstrntNum = 0;
+	static int nodeNum = 0, edgeNum = 0, nodeCstrntNum = 0, edgeCstrntNum = 0, limitNodeNum = Integer.MAX_VALUE;
 	static int[][] graph;//邻接矩阵
 	static int[][] allGraph;//拆点后的邻接矩阵
 	static ArrayList<Integer> nodeCstrnt = new ArrayList<Integer>();//必须经过的点
 	static ArrayList<Edge> edgeCstrnt = new ArrayList<Edge>();//必须经过的边
 	static boolean[] visited;//判断是否访问过
-	static int[] pre;//保留上一个节点
+	static int[] pre;//保留上一个节点,保留经过节点个数；
 	static List<Integer> path;
 	
 	
@@ -27,17 +27,27 @@ public class Main {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		//checkMatrix(graph);
-		graphTrans(nodeCstrntNum+edgeCstrntNum);
-		//checkMatrix(allGraph);
-		dijkstra();
-		//checkMatrix(allGraph);
-		genPath();
-		showPath();
+		doLimitPath();
 		
 	}
+	//忽略经过点数量的最优路径
+	public static void doBestPath(){
+		graphTrans(nodeCstrntNum+edgeCstrntNum);		
+		dijkstra(allGraph);
+		genPath();
+		showPath();
+	}
+	//考虑最小点数的路径
+	public static void doLimitPath(){
+		graphTransPassNum(nodeCstrntNum+edgeCstrntNum);		
+		//checkMatrix(allGraph);
+		dijkstra(allGraph);
+		genPath();
+		showPath();
+	}
+	
 	//暴力迪杰斯特拉
-	public static void dijkstra(){
+	public static void dijkstra(int[][] allGraph){
 		visited = new boolean[allGraph.length];
 		pre = new int[allGraph.length];
 		Arrays.fill(visited, false);
@@ -65,6 +75,19 @@ public class Main {
 			visited[tmpNode] = true;
 			visiting = tmpNode;
 			//System.out.println("已遍历点"+visiting);
+		}
+	}
+	
+	//该函数用于生成｛判断经过约束到达目标至少需要经过几个节点｝的矩阵
+	public static void graphTransPassNum(int cstrntNum){
+		graphTrans(cstrntNum);
+		checkMatrix(allGraph);
+		for (int i = 0; i < allGraph.length; i++){
+			for (int j = 0; j < allGraph[0].length; j++){
+				if (allGraph[i][i] < Integer.MAX_VALUE && allGraph[i][j] > 0){
+					allGraph[i][j] = 1;
+				}
+			}
 		}
 	}
 	
