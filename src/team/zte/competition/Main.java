@@ -27,7 +27,25 @@ public class Main {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		doLimitPath();
+		System.out.printf("当前输入包含：%d个必须经过的点， %d条必须经过的边， 经过的点数限制为%d个。\n", nodeCstrntNum, edgeCstrntNum, limitNodeNum);
+		doBestPath();
+		if (path.size() > limitNodeNum){
+			doLimitPath();
+			if (path.size() > limitNodeNum){
+				System.out.println("当前无法满足所有条件,当考虑经过必经点与边时，经过最少点数的次优解为：");
+				showPath();
+			}else{
+				System.out.println("当考虑经过必经点与边时，满足条件的最优解为：");
+				showPath();
+			}
+			System.out.println("若不考虑经过的点数，满足条件的次优解为：");
+			doBestPath();
+			showPath();
+		}else{
+			showPath();
+		}
+		
+		
 		
 	}
 	//忽略经过点数量的最优路径
@@ -35,7 +53,7 @@ public class Main {
 		graphTrans(nodeCstrntNum+edgeCstrntNum);		
 		dijkstra(allGraph);
 		genPath();
-		showPath();
+		
 	}
 	//考虑最小点数的路径
 	public static void doLimitPath(){
@@ -43,7 +61,7 @@ public class Main {
 		//checkMatrix(allGraph);
 		dijkstra(allGraph);
 		genPath();
-		showPath();
+		
 	}
 	
 	//暴力迪杰斯特拉
@@ -81,10 +99,10 @@ public class Main {
 	//该函数用于生成｛判断经过约束到达目标至少需要经过几个节点｝的矩阵
 	public static void graphTransPassNum(int cstrntNum){
 		graphTrans(cstrntNum);
-		checkMatrix(allGraph);
+		//checkMatrix(allGraph);
 		for (int i = 0; i < allGraph.length; i++){
 			for (int j = 0; j < allGraph[0].length; j++){
-				if (allGraph[i][i] < Integer.MAX_VALUE && allGraph[i][j] > 0){
+				if (allGraph[i][j] < Integer.MAX_VALUE && allGraph[i][j] > 0){
 					allGraph[i][j] = 1;
 				}
 			}
@@ -149,6 +167,7 @@ public class Main {
 				graph[end][begin] = len;
 			}
 			//开始读入约束
+			limitNodeNum = sc.nextInt();
 			nodeCstrntNum = sc.nextInt();
 			edgeCstrntNum = sc.nextInt();
 			for (int i = 0; i < nodeCstrntNum; i++){
@@ -175,11 +194,13 @@ public class Main {
 	}
 	//输出路径
 	public static void showPath(){
-		System.out.print("路径为 ：\t");
+		System.out.print("建议路径为 ：");
+		int cost = 0;
 		for (int i = path.size() - 1; i > 0; i--){
 			System.out.printf("%d -> ",path.get(i));
+			cost += graph[path.get(i)][path.get(i-1)];
 		}
-		System.out.printf("%d, 总花费为%d, 总共经过%d个点。",path.get(0),allGraph[0][allGraph.length-1],path.size());
+		System.out.printf("%d, 总花费为%d, 总共经过%d个点。\n",path.get(0),cost,path.size());
 	}
 	
 	
